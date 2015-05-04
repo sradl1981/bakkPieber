@@ -1,0 +1,7 @@
+
+cellZoneSet fluid remove
+cellSet fluidSet remove
+cellSet fluidSet new boxToCell (-999 -999 -999) (999 999 999)
+list
+cellSet fluidSet delete zoneToCell bedOfSpheres
+cellZoneSet fluid new setToCellZone fluidSet

@@ -1,0 +1,51 @@
+#!/bin/sh
+cd ${0%/*} || exit 1    # run from this directory
+
+currDir=$PWD
+# Source tutorial run functions
+. $WM_PROJECT_DIR/bin/tools/RunFunctions
+nProcessors=8
+echo $nProcessors
+
+#moving log-files of primary step 
+mkdir MeshLog
+mv log.* MeshLog
+rm -r 0
+rm -r processor*
+
+echo "splitting the mesh regions into fluid and bedOfSpheres"
+runApplication splitMeshRegions -cellZonesOnly -overwrite
+cp system/decomposeParDict system/fluid
+cp system/decomposeParDict system/bedOfSpheres
+
+cd constant/polyMesh
+ls *|grep -v blockMeshDict|xargs rm -rf
+
+# A - Outer layering of spheres 
+#Copy outer mesh
+cd $currDir
+mkdir meshLayering
+mkdir meshLayering/constant
+cp -r system  meshLayering
+cp -r constant/fluid/polyMesh meshLayering/constant
+mv meshLayering/system/snappyHexMeshDict.layers meshLayering/system/snappyHexMeshDict
+
+#Do the layering & move the mesh back
+echo "doing the layering of fluid region"
+cd meshLayering
+        runApplication decomposePar  -force 
+        runParallel snappyHexMesh $nProcessors -overwrite 
+        runParallel checkMesh $nProcessors -constant
+        mv log.checkMesh      $currDir/MeshLog/log.checkMeshFluid
+        cp log.snappyHexMesh  $currDir/MeshLog/log.snappyHexOuterLayer
+        runApplication reconstructParMesh -constant -mergeTol 1E-06
+        rm -r processor*
+cd $currDir 
+rm -r  constant/fluid/polyMesh
+mv meshLayering/constant/polyMesh constant/fluid
+rm -r meshLayering
+
+touch m.foam
+
+# ----------------------------------------------------------------- end-of-file
+

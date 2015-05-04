@@ -1,0 +1,13 @@
+ #!/bin/sh
+#PBS -l walltime=720:00:00,nodes=1:ppn=8
+OMP_NUM_THREADS=$(cat ${PBS_NODEFILE}|wc -l)
+export OMP_NUM_THREADS
+
+cd $PBS_O_WORKDIR
+
+source /home/sradl/OpenFOAM/OpenFOAM-2.1.x/etc/bashrc
+
+
+./Solver
+
+

@@ -1,0 +1,41 @@
+#!/bin/sh
+cd ${0%/*} || exit 1    # run from this directory
+
+currDir=$PWD
+# Source tutorial run functions
+. $WM_PROJECT_DIR/bin/tools/RunFunctions
+nProcessors=8
+echo $nProcessors
+
+runApplication blockMesh
+runApplication decomposePar -force
+
+# A - tube Mesh
+echo "doing the meshing of the tube"
+runParallel snappyHexMesh $nProcessors -overwrite 
+
+cp log.snappyHexMesh system/log.snappyHexTube
+rm log.snappyHexMesh
+
+# B - #Copy Mesh for meshing bedOfSpheres 
+mkdir bedOfSpheres
+cp -r system  bedOfSpheres
+cp -r processor* bedOfSpheres
+mv bedOfSpheres/system/snappyHexMeshDict.spheres bedOfSpheres/system/snappyHexMeshDict
+
+# Do the meshing of bedOfSpheres without layering
+echo "doing the meshing of bedOfSpheres"
+cd bedOfSpheres
+runParallel snappyHexMesh $nProcessors -overwrite 
+cp log.snappyHexMesh $currDir/log.snappyHexMesh
+cd $currDir
+rm -r processor*
+mv bedOfSpheres/processor* $currDir
+rm -r bedOfSpheres
+#runParallel createPatch   $nProcessors  -overwrite 
+
+runApplication reconstructParMesh -constant -mergeTol 1E-06
+runApplication checkMesh     -constant
+runApplication setSet -batch zoneCreation.setSet -constant
+touch m.foam
+# ----------------------------------------------------------------- end-of-file

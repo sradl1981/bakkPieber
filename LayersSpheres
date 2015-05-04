@@ -1,0 +1,36 @@
+#!/bin/sh
+cd ${0%/*} || exit 1    # run from this directory
+
+currDir=$PWD
+# Source tutorial run functions
+. $WM_PROJECT_DIR/bin/tools/RunFunctions
+nProcessors=8
+echo $nProcessors
+
+# B - #Copy Mesh inside spheres 
+echo "doing the layering inside bedOfSpheres"
+mkdir meshLayering
+mkdir meshLayering/constant
+cp -r system  meshLayering
+cp -r constant/bedOfSpheres/polyMesh meshLayering/constant
+mv meshLayering/system/snappyHexMeshDict.layers meshLayering/system/snappyHexMeshDict
+cd meshLayering
+        runApplication decomposePar  -force 
+        runParallel snappyHexMesh $nProcessors -overwrite 
+        runParallel checkMesh $nProcessors -constant
+        cp log.snappyHexMesh $currDir/MeshLog/log.snappyHexInnerLayer
+
+        mv log.checkMesh $currDir/MeshLog/log.checkMeshBedOfSpheres
+        runApplication reconstructParMesh -constant -mergeTol 1E-06
+        rm -r processor*
+cd $currDir 
+rm -r  constant/bedOfSpheres/polyMesh
+mv meshLayering/constant/polyMesh constant/bedOfSpheres
+rm -r meshLayering
+#Optional: create a single patch from all sub-surfaces of the composite surface
+#runParallel createPatch  $nProcessors   -overwrite -parallel
+
+touch m.foam
+
+# ----------------------------------------------------------------- end-of-file
+

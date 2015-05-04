@@ -1,0 +1,33 @@
+#!/bin/sh
+cd ${0%/*} || exit 1    # run from this directory
+
+currDir=$PWD
+# Source tutorial run functions
+. $WM_PROJECT_DIR/bin/tools/RunFunctions
+
+nProcessors=16
+echo $nProcessors
+
+rm log.chtMultiRegionFoam
+rm log.decomposePar
+rm log.reconstructPar
+rm -r postProcessing
+rm -r processor*
+
+cd constant/polyMesh
+ls *|grep -v blockMeshDict|xargs rm -rf
+
+echo "setting up the initial conditions for coupled solver"
+cd $currDir
+rm -r 0
+mv 0.cht 0
+cp -r 0 0.cht
+
+runApplication decomposePar -force -allRegions -constant
+## Run
+echo "run the chtMultRegion solver"
+runParallel `getApplication` $nProcessors
+
+
+touch m.foam
+# ----------------------------------------------------------------- end-of-file

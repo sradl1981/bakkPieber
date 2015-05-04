@@ -1,0 +1,53 @@
+/*---------------------------------------------------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2.2.1                                 |
+|   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+Build  : 2.2.1-57f3c3617a2d
+Exec   : splitMeshRegions -cellZonesOnly -overwrite
+Date   : Apr 07 2015
+Time   : 10:28:18
+Host   : "thomasf"
+PID    : 15697
+Case   : /home/tforg/OpenFOAM/tforg-2.2.1/run/Raphal/steady_state/049_chtMultiRegion_Re100_developedT_1_steady
+nProcs : 1
+sigFpe : Enabling floating point exception trapping (FOAM_SIGFPE).
+fileModificationChecking : Monitoring run-time modified files using timeStampMaster
+allowSystemOperations : Disallowing user-supplied system call operations
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+Create time
+
+Create mesh for time = 0
+
+Creating single patch per inter-region interface.
+
+Using current cellZones to split mesh into regions. This requires all cells to be in one and only one cellZone.
+
+
+Number of regions:1
+
+Writing region per cell file (for manual decomposition) to "/home/tforg/OpenFOAM/tforg-2.2.1/run/Raphal/steady_state/049_chtMultiRegion_Re100_developedT_1_steady/constant/cellToRegion"
+
+Writing region per cell as volScalarField to "/home/tforg/OpenFOAM/tforg-2.2.1/run/Raphal/steady_state/049_chtMultiRegion_Re100_developedT_1_steady/0/cellToRegion"
+
+Region	Cells
+------	-----
+0	2000
+
+Region	Zone	Name
+------	----	----
+0	0	fluid
+
+Sizes of interfaces between regions:
+
+Interface	Region	Region	Faces
+---------	------	------	-----
+
+Reading volScalarField cellToRegion
+
+Only one region. Doing nothing.
+End
+

@@ -64,7 +64,7 @@ pressureDrop
     functionObjectLibs ("libfieldFunctionObjects.so");
 
     log             true;
-    valueOutput     true;
+    valueOutput     false;
 
     outputControl   timeStep;
     outputInterval  20;
@@ -95,7 +95,7 @@ Tf_out
     functionObjectLibs ("libfieldFunctionObjects.so");
 
     log             true;
-    valueOutput     true;
+    valueOutput     false;
 
     outputControl   timeStep;
     outputInterval  20;
@@ -123,7 +123,7 @@ T_sphere_mean
         outputControl   timeStep;
         outputInterval   20;
         log                   yes;
-        valueOutput           true;
+        valueOutput           false;
         source              cellZone; // sampledSurface; //patch //faceZone
         sourceName     bedOfSpheres; //patch name
     
@@ -146,7 +146,7 @@ T_sphere_mean
         outputControl   timeStep;
         outputInterval   20;
         log                   yes;
-        valueOutput           true;
+        valueOutput           false;
         source              patch; // sampledSurface; //patch //faceZone
         sourceName         bedOfSpheres_to_fluid; //patch name
     
@@ -170,7 +170,7 @@ T_sphere_mean
         outputControl   timeStep;
         outputInterval  20;
         log                   yes;
-        valueOutput           true;
+        valueOutput           false;
         source              cellZone; // sampledSurface; //patch //faceZone
         sourceName     bedOfSpheres; //patch name
         region bedOfSpheres;

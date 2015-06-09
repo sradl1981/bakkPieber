@@ -1,6 +1,9 @@
 README
 ===============
 
+Copyright
+----------------
+Markus Pieber, TU Graz, 2015
 
 Description
 ---------------------------

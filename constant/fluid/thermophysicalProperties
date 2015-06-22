@@ -35,20 +35,22 @@ mixture
     }
     thermodynamics
     {
-        Cp              2100;
+        Cp              1;	
         Hf              0.0;
     }
     transport
     {
-        mu              5.1e-5;
-        Pr             4.28;
+        mu              0.1;		// value in order to achieve a Reynolds number of 10
+        Pr             	0.70;		// value for air at 1000 °C and 10 bar
     }
 
     equationOfState
     {
-        rho     830;
+        rho     	1;		
     }
 }
+
+dpdt	no;
 
 
 

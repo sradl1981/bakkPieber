@@ -1,0 +1,10 @@
+
+        set title "Residual vs. Iteration"
+        set xlabel "Iteration"
+        set ylabel "Monitor values"
+        plot "postProcessing/bedOfSpheres/averageSurfaceTemperature/40/faceSource.dat" using 1:3 title "averageSurfaceTemperature",\
+	    "postProcessing/bedOfSpheres/averageSolidTemperature/40/cellSource.dat" using 1:3 title "averageSolidTemperature"
+        pause 2
+        reread
+
+# ----------------------------------------------------------------- end-of-file

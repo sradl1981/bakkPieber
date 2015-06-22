@@ -29,7 +29,7 @@ FoamFile
         nFaces          160;
         startFace       75707;
     }
-    tubeWall_region0
+    tubeWall
     {
         type            wall;
         inGroups        1(wall);

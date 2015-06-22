@@ -48,6 +48,7 @@ laplacianSchemes
     laplacian(DkEff,k) Gauss linear limited corrected 0.333;
     laplacian(DepsilonEff,epsilon) Gauss linear limited corrected 0.333;
     laplacian(DREff,R) Gauss linear limited corrected 0.333;
+    laplacian(rhorAUf,p_rgh) Gauss linear limited corrected 0.333;
 }
 
 interpolationSchemes

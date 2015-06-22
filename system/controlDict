@@ -17,22 +17,20 @@ FoamFile
 
 application     chtMultiRegionFoam; 
 
-startFrom       latestTime;
-
-//startFrom 	startTime;
-//startTime       0;
+startFrom	latestTime;
 
 stopAt          endTime;
+// stopAt		nextWrite; // stops simulation on completion of next scheduled write time, specified by writeControl	
 
-endTime         20.0;
+endTime         2000;
 
 deltaT          1e-8;
 
-writeControl    timeStep;
+writeControl    adjustableRunTime; // writes data every writeInterval seconds of simulated time, adjusting the time steps to coincide with 
+				   // the writeInterval if necessary — used in cases with automatic time step adjustment 
+writeInterval   5;
 
-writeInterval   20; //1
-
-purgeWrite      5; //keep the last 5 time steps
+purgeWrite      10;
 
 writeFormat     ascii;
 
@@ -46,227 +44,173 @@ timePrecision   6;
 
 runTimeModifiable true;
 
-maxCo           0.30; //0.30
+maxCo           0.50; 
 
 adjustTimeStep  yes;
 
-maxDi           10.0;
-
-
+maxDi           5.0;
 
 // ************************************************************************* //
+
 functions
-(
-
-pressureDrop
 {
-    type            faceSource;
-    functionObjectLibs ("libfieldFunctionObjects.so");
-
-    log             true;
-    valueOutput     false;
-
-    outputControl   timeStep;
-    outputInterval  20;
-
-    surfaceFormat   null;
-    source          sampledSurface; 
-    region fluid; 
-
-  //  sourceName      inlet;
-    sampledSurfaceDict
-        {
-        type patchInternalField;
-        patches ( ".*inlet.*" );
-
-        offsetMode normal;
-        distance 0.00;
-        interpolate false;
-       }
-     
-    operation       areaAverage;
-    fields
-    (  p  );
-}
-
-Tf_out
-{
-    type            faceSource;
-    functionObjectLibs ("libfieldFunctionObjects.so");
-
-    log             true;
-    valueOutput     false;
-
-    outputControl   timeStep;
-    outputInterval  20;
-
-    surfaceFormat   null;
-    source          patch;
-    sourceName      outlet;
-    region fluid;
-                   
-    operation       weightedAverage; //need to weight with surface flux!
-
-    weightField     phi; //surface flux
-
-    fields
-    (
-        T
-    );
-}
-
-T_sphere_mean
+    outletFlowWeightedFluidTemperature
     {
-    
-        type                  cellSource;
-        functionObjectLibs ("libfieldFunctionObjects.so");
-        outputControl   timeStep;
-        outputInterval   20;
-        log                   yes;
-        valueOutput           false;
-        source              cellZone; // sampledSurface; //patch //faceZone
-        sourceName     bedOfSpheres; //patch name
-    
-        region bedOfSpheres;
-    
-        operation         volAverage;
-	surfaceFormat	raw;
+	 type            	faceSource;
+	 functionObjectLibs 	("libfieldFunctionObjects.so");
+	 log             	true;
+	 valueOutput     	false;
+	 outputControl   	timeStep;
+	 outputInterval  	20;
+	 source          	patch;
+	 sourceName      	outlet;
+	 region 		fluid;
+         operation       	weightedAverage; 	//need to weight with surface flux!
+	 weightField     	phi; 			//surface flux
 
-        fields
-        (
-            T
-        );
+	 fields
+	 (
+	      T
+	 );
     }
 
- T_surface_mean
+    averageFluidTemperature
     {
-    
-        type                  faceSource;
-        functionObjectLibs ("libfieldFunctionObjects.so");
-        outputControl   timeStep;
-        outputInterval   20;
-        log                   yes;
-        valueOutput           false;
-        source              patch; // sampledSurface; //patch //faceZone
-        sourceName         bedOfSpheres_to_fluid; //patch name
-    
-        region bedOfSpheres;
-    
-        operation         areaAverage;
-	surfaceFormat	raw;
-
-        fields
-        (
-            T
-        );
-        interpolate false;
+	type            	cellSource;
+	functionObjectLibs 	("libfieldFunctionObjects.so");
+	enabled         	true;
+	log             	true;
+	valueOutput     	false;
+	outputControl   	timeStep;
+	outputInterval  	20;
+	region			fluid;
+	source          	cellZone;
+	sourceName      	fluid;
+	operation       	volAverage;
+	
+	fields
+	(
+	    T
+	);
     }
-
-   T_sphere_integral
-    {
     
-        type                  cellSource;
-        functionObjectLibs ("libfieldFunctionObjects.so");
-        outputControl   timeStep;
-        outputInterval  20;
-        log                   yes;
-        valueOutput           false;
-        source              cellZone; // sampledSurface; //patch //faceZone
-        sourceName     bedOfSpheres; //patch name
-        region bedOfSpheres;
-  	    operation         volIntegrate;
-	    surfaceFormat	raw;
-
-        fields
-        (
-            T
-        );
-    }
 // ************************************************************************* //
-sampleSphereSurface
-{
-    type sets;
-    interpolationScheme cell; //takes cell value! 
-    setFormat raw;
-    region fluid;
-        outputControl   timeStep;
-        outputInterval   1000;
-
-sets
-(
-   sphereSurface
+    
+    averageSolidTemperature
     {
-        type    circle;
-        axis     xyz;
-        origin          (0 0 0);        //- Origin (x, y, z) in global cartesian co-ordinates
-        circleAxis     (0 1 0);             //- Axis of the circle
-        startPoint    (0 0 0.302e-3);  //- Point on circle (x, y, z) in global cartesian co-ordinates. Defines start point
-        dTheta 2;                              //- Sampling interval in degrees about the origin
-	interpolate true;
-
+    
+        type                  	cellSource;
+        functionObjectLibs 	("libfieldFunctionObjects.so");
+        outputControl   	timeStep;
+        outputInterval   	20;
+        log                   	yes;
+        valueOutput          	false;
+        source              	cellZone; 		
+        sourceName     		bedOfSpheres;
+        region 			bedOfSpheres;
+        operation         	volAverage;
+	
+        fields
+        (
+            T
+        );
     }
 
-);
+    averageSurfaceTemperature
+    {
+    
+        type                  	faceSource;
+        functionObjectLibs 	("libfieldFunctionObjects.so");
+        outputControl   	timeStep;
+        outputInterval   	20;
+        log                   	yes;
+        valueOutput           	false;
+        source              	patch; 			// sampledSurface; //patch //faceZone
+        sourceName         	bedOfSpheres_to_fluid; 	//patch name
+        region 			bedOfSpheres;
+        operation         	areaAverage;
+	
+        fields
+        (
+            T
+        );
+    }
+    
+    volumeIntegratedSolidTemperature
+    {
+    
+        type                  	cellSource;
+        functionObjectLibs 	("libfieldFunctionObjects.so");
+        outputControl   	timeStep;
+        outputInterval  	20;
+        log                   	yes;
+        valueOutput           	false;
+        source              	cellZone; 
+        sourceName     		bedOfSpheres; 
+        region 			bedOfSpheres;
+  	operation         	volIntegrate;
 
-fields          ( T ); 
+        fields
+        (
+            T
+        );
+    }
+    
+    
+// ************************************************************************* //
 
-}
+    probes
+    {
+        functionObjectLibs 	( "libsampling.so" );
+        type            	probes;
+        name            	probes;
+        outputControl   	timeStep;
+	outputInterval  	20;
+	region			fluid;
+	
+        fields
+        (
+            T
+        );
+	
+        probeLocations
+        (
+            ( 0.001 0.001  0.6 )    
+            ( 0.001 0.001 -0.6 )
+	    ( 0.001 0.001 -1.0 )  
+        );
+    }
 
 // ************************************************************************* //
-     sliceData0_fluid
-      {
-          type surfaces;
-          functionObjectLibs ("libsampling.so");
-          interpolationScheme cell;
 
-        outputControl   timeStep;
-        outputInterval   1000;
-          surfaceFormat vtk;
-	region fluid;
+    zTemperatureProfileInSolid
+    {
+	functionObjectLibs 	( "libsampling.so" );
+	type 			sets;
+	enabled			true;
+	interpolationScheme 	cell; //takes cell value! 
+	setFormat 		raw;
+	region 			bedOfSpheres;
+	outputControl   	outputTime;
+	// outputInterval   	5;
 
-          fields ( U p T );
+	fields          
+	( 
+	    T
+	); 
+      
+	sets
+	(
+	    zline
+	    {
+		type    		uniform;
+		axis     		z;		// output of sample location
+		start   		( 0.001 0.001 -0.51 );
+		end 			( 0.001 0.001  0.51 );
+		nPoints			100;
+	    }
+	);
+    }
+}
 
-          surfaces
-          (
-              slice_parallel_0
-              {
-                  type cuttingPlane;
-                  planeType pointAndNormal;
-                  pointAndNormalDict
-                  {
-                      basePoint (0 0 0);
-                      normalVector (0 1 0);
-                  }
-    	       interpolate true;
-              }
-  	   );
-        } 
-  sliceData0_bedOfSpheres
-      {
-          type surfaces;
-          functionObjectLibs ("libsampling.so");
-          interpolationScheme cell;
-
-        outputControl   timeStep;
-        outputInterval   1000;
-          surfaceFormat vtk;
-	region bedOfSpheres;
-
-          fields (  T );
-
-          surfaces
-          (
-              slice_parallel_0
-              {
-                  type cuttingPlane;
-                  planeType pointAndNormal;
-                  pointAndNormalDict
-                  {
-                      basePoint (0 0 0);
-                      normalVector (0 1 0);
-                  }
-    	       interpolate true;
-              }
-  	   );
-        } 
-);
+// ************************************************************************* //

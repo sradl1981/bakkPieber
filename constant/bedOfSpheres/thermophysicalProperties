@@ -35,18 +35,18 @@ mixture
 
     transport
     {
-        kappa   0.6785;   // heat conductivity [W/mK]
+        kappa   0.714;   // heat conductivity [W/mK] // value in order to achieve a heat conductivity ratio of 5
     }
 
     thermodynamics
     {
         Hf      0;
-        Cp      2576;
+        Cp      1;  
     }
 
     equationOfState
     {
-        rho     1400;
+        rho     1500;
     }
 }
 

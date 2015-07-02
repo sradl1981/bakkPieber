@@ -1,0 +1,49 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2.2.1                                 |
+|   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    location    "system";
+    object      sampleDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+interpolationScheme cellPoint;
+
+setFormat       raw;
+
+sets
+(
+    circleOut
+    {
+        type    circle;
+        axis     xyz;
+        origin          (0 0 0);        //- Origin (x, y, z) in global cartesian co-ordinates
+        circleAxis     (0 1 0);             //- Axis of the circle
+        startPoint    (0.51 0 0);  //- Point on circle (x, y, z) in global cartesian co-ordinates. Defines start point
+        dTheta 2;                              //- Sampling interval in degrees about the origin
+    }
+
+    circleIn
+    {
+        type    circle;
+        axis     xyz;
+        origin          (0 0 0);        //- Origin (x, y, z) in global cartesian co-ordinates
+        circleAxis     (0 1 0);             //- Axis of the circle
+        startPoint    (0.505 0 0);  //- Point on circle (x, y, z) in global cartesian co-ordinates. Defines start point
+        dTheta 2;                              //- Sampling interval in degrees about the origin
+    }
+
+);
+
+fields          ( U T);
+
+
+// ************************************************************************* //

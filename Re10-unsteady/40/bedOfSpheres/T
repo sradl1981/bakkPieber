@@ -1,0 +1,35 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2.3.1                                 |
+|   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       volScalarField;
+    location    "40/bedOfSpheres";
+    object      T;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+dimensions      [0 0 0 1 0 0 0];
+
+internalField   uniform 600;
+
+boundaryField
+{
+    bedOfSpheres_to_fluid
+    {
+        type           	compressible::turbulentTemperatureCoupledBaffleMixed;
+        value           600;
+        Tnbr 		T;
+        kappa           solidThermo;
+        kappaName       none;
+    }
+}
+
+
+// ************************************************************************* //

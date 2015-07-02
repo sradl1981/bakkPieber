@@ -1,0 +1,41 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2.2.1                                 |
+|   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    location    "system";
+    object      sampleDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+interpolationScheme cell;
+
+surfaceFormat       null;
+
+fields          ( U p);
+
+surfaces
+(      
+        inlet 
+       {
+        type patchInternalField;
+        patches ( ".*inlet.*" );
+        // Optional: specify how to obtain sampling points from the patch
+        // face centres (default is 'normal')
+        //
+        // //- Specify distance to offset in normal direction
+        offsetMode normal;
+
+        distance 0.01;
+        interpolate false;
+       }
+);
+
+// ************************************************************************* //

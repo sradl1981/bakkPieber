@@ -1,0 +1,23 @@
+set(0, 'defaultTextInterpreter', 'latex'); 
+box on
+
+xlim([0 2.2])
+ylim([0 1])
+set(gca, 'XTick', [0:.25:100])
+set(gca, 'YTick', [0:.2:100])
+xlabel('$U_{mean,x}$','interpreter','latex') 
+ylabel('$y$','interpreter','latex') 
+
+leg = legend( comparePlotLegend, 'interpreter', 'latex');
+legend('boxoff')
+set(leg,'location','SouthEast'); 
+
+xlhand = get(gca,'xlabel');ylhand = get(gca,'ylabel');
+set(xlhand,'Position',get(xlhand,'Position') - [0 .005 0])
+makeXYPlotPretty
+set(gca, 'Position', get(gca, 'OuterPosition') + 1 *...
+    [0.25 0.25 -0.45 -0.35]);
+%cm=1-hot(40)
+%colormap(cm)
+set(gcf, 'paperunits', 'centimeters', 'paperposition', [0 0 21 18])
+print('-depsc','-r300', plotFileName) 

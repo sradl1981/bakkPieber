@@ -1,0 +1,216 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2.2.1                                 |
+|   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    location    "system";
+    object      controlDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+application     chtMultiRegionFoam; 
+
+startFrom	latestTime;
+
+stopAt          endTime;
+// stopAt		nextWrite; // stops simulation on completion of next scheduled write time, specified by writeControl	
+
+endTime         3000.0;
+
+deltaT          1e-8;
+
+writeControl    adjustableRunTime; // writes data every writeInterval seconds of simulated time, adjusting the time steps to coincide with 
+				   // the writeInterval if necessary — used in cases with automatic time step adjustment 
+writeInterval   5;
+
+purgeWrite      10;
+
+writeFormat     ascii;
+
+writePrecision  6;
+
+writeCompression off;
+
+timeFormat      general;
+
+timePrecision   6;
+
+runTimeModifiable true;
+
+maxCo           0.30; 
+
+adjustTimeStep  yes;
+
+maxDi           5.0;
+
+// ************************************************************************* //
+
+functions
+{
+    outletFlowWeightedFluidTemperature
+    {
+	 type            	faceSource;
+	 functionObjectLibs 	("libfieldFunctionObjects.so");
+	 log             	true;
+	 valueOutput     	false;
+	 outputControl   	timeStep;
+	 outputInterval  	20;
+	 source          	patch;
+	 sourceName      	outlet;
+	 region 		fluid;
+         operation       	weightedAverage; 	//need to weight with surface flux!
+	 weightField     	phi; 			//surface flux
+
+	 fields
+	 (
+	      T
+	 );
+    }
+
+    averageFluidTemperature
+    {
+	type            	cellSource;
+	functionObjectLibs 	("libfieldFunctionObjects.so");
+	enabled         	true;
+	log             	true;
+	valueOutput     	false;
+	outputControl   	timeStep;
+	outputInterval  	20;
+	region			fluid;
+	source          	cellZone;
+	sourceName      	fluid;
+	operation       	volAverage;
+	
+	fields
+	(
+	    T
+	);
+    }
+    
+// ************************************************************************* //
+    
+    averageSolidTemperature
+    {
+    
+        type                  	cellSource;
+        functionObjectLibs 	("libfieldFunctionObjects.so");
+        outputControl   	timeStep;
+        outputInterval   	20;
+        log                   	yes;
+        valueOutput          	false;
+        source              	cellZone; 		
+        sourceName     		bedOfSpheres;
+        region 			bedOfSpheres;
+        operation         	volAverage;
+	
+        fields
+        (
+            T
+        );
+    }
+
+    averageSurfaceTemperature
+    {
+    
+        type                  	faceSource;
+        functionObjectLibs 	("libfieldFunctionObjects.so");
+        outputControl   	timeStep;
+        outputInterval   	20;
+        log                   	yes;
+        valueOutput           	false;
+        source              	patch; 			// sampledSurface; //patch //faceZone
+        sourceName         	bedOfSpheres_to_fluid; 	//patch name
+        region 			bedOfSpheres;
+        operation         	areaAverage;
+	
+        fields
+        (
+            T
+        );
+    }
+    
+    volumeIntegratedSolidTemperature
+    {
+    
+        type                  	cellSource;
+        functionObjectLibs 	("libfieldFunctionObjects.so");
+        outputControl   	timeStep;
+        outputInterval  	20;
+        log                   	yes;
+        valueOutput           	false;
+        source              	cellZone; 
+        sourceName     		bedOfSpheres; 
+        region 			bedOfSpheres;
+  	operation         	volIntegrate;
+
+        fields
+        (
+            T
+        );
+    }
+    
+    
+// ************************************************************************* //
+
+    probes
+    {
+        functionObjectLibs 	( "libsampling.so" );
+        type            	probes;
+        name            	probes;
+        outputControl   	timeStep;
+	outputInterval  	20;
+	region			fluid;
+	
+        fields
+        (
+            T
+        );
+	
+        probeLocations
+        (
+            ( 0.001 0.001  0.6 )    
+            ( 0.001 0.001 -0.6 )
+	    ( 0.001 0.001 -1.0 )  
+        );
+    }
+
+// ************************************************************************* //
+
+    zTemperatureProfileInSolid
+    {
+	functionObjectLibs 	( "libsampling.so" );
+	type 			sets;
+	enabled			true;
+	interpolationScheme 	cell; //takes cell value! 
+	setFormat 		raw;
+	region 			bedOfSpheres;
+	outputControl   	outputTime;
+	// outputInterval   	5;
+
+	fields          
+	( 
+	    T
+	); 
+      
+	sets
+	(
+	    zline
+	    {
+		type    		uniform;
+		axis     		z;		// output of sample location
+		start   		( 0.001 0.001 -0.51 );
+		end 			( 0.001 0.001  0.51 );
+		nPoints			100;
+	    }
+	);
+    }
+}
+
+// ************************************************************************* //

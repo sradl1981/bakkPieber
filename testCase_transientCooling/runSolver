@@ -1,0 +1,21 @@
+#!/bin/sh
+cd ${0%/*} || exit 1    # run from this directory
+
+currDir=$PWD
+
+# Source tutorial run functions
+. $WM_PROJECT_DIR/bin/tools/RunFunctions
+
+## Run on single processor
+#runApplication `getApplication`
+
+## Decompose
+runApplication decomposePar -allRegions
+
+## Run
+runParallel `getApplication` 8
+
+## Reconstruct
+runApplication reconstructPar -allRegions
+
+# ----------------------------------------------------------------- end-of-file

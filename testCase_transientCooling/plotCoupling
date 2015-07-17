@@ -1,0 +1,10 @@
+
+	set title "Monitor values vs. Time"
+        set xlabel "Time"
+        set ylabel "Monitor values"
+        plot "postProcessing/bedOfSpheres/averageSurfaceTemperatureSolid/30/faceSource.dat" using 1:3 title "averageSurfaceTemperatureSolid",\
+	    "postProcessing/fluid/averageSurfaceTemperatureFluid/30/faceSource.dat" using 1:3 title "averageSurfaceTemperatureFluid"
+        pause 2
+        reread
+
+# ----------------------------------------------------------------- end-of-file

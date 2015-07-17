@@ -1,0 +1,575 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2.3.0                                 |
+|   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    location    "system";
+    object      controlDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+application     chtMultiRegionFoam; 
+
+startFrom	latestTime; // startTime;
+
+// startTime	0;
+
+stopAt          endTime;           // nextWrite; // stops simulation on completion of next scheduled write time, specified by writeControl	
+
+endTime         3000;
+
+deltaT          1e-8;
+
+writeControl    adjustableRunTime; // writes data every writeInterval seconds of simulated time, adjusting the time steps to coincide with 
+				   // the writeInterval if necessary — used in cases with automatic time step adjustment 
+writeInterval   100;
+
+purgeWrite      5;
+
+writeFormat     ascii;
+
+writePrecision  12
+
+writeCompression off;
+
+timeFormat      general;
+
+timePrecision   12;
+
+runTimeModifiable true;
+
+maxCo           0.30; 
+
+adjustTimeStep  yes;
+
+maxDi           10.0;
+
+// ************************************************************************* //
+
+functions
+{
+    outletFlowWeightedFluidTemperature
+    {
+	 type            	faceSource;
+	 functionObjectLibs 	("libfieldFunctionObjects.so");
+	 log             	true;
+	 valueOutput     	false;
+	 outputControl   	timeStep;
+	 outputInterval  	20;
+	 source          	patch;
+	 sourceName      	outlet;
+	 region 		fluid;
+         operation       	weightedAverage; 	
+	 weightField     	phi; 	
+	 
+	 fields
+	 (
+	      T
+	 );
+    }
+
+    averageFluidTemperature
+    {
+	type            	cellSource;
+	functionObjectLibs 	("libfieldFunctionObjects.so");
+	enabled         	true;
+	log             	true;
+	valueOutput     	false;
+	outputControl   	timeStep;
+	outputInterval  	20;
+	region			fluid;
+	source          	cellZone;
+	sourceName      	fluid;
+	operation       	volAverage;
+	
+	fields
+	(
+	    T
+	);
+    }
+    
+    averageSurfaceTemperatureFluid
+    {
+    
+        type                  	faceSource;
+        functionObjectLibs 	("libfieldFunctionObjects.so");
+        outputControl   	timeStep;
+        outputInterval   	20;
+        log                   	yes;
+        valueOutput           	false;
+        source              	patch; 			
+        sourceName         	fluid_to_bedOfSpheres; 
+        region 			fluid;
+        operation         	areaAverage;
+	
+        fields
+        (
+            T
+        );
+    }
+    
+// ************************************************************************* //
+    
+    averageSolidTemperature
+    {
+    
+        type                  	cellSource;
+        functionObjectLibs 	("libfieldFunctionObjects.so");
+        outputControl   	timeStep;
+        outputInterval   	20;
+        log                   	yes;
+        valueOutput          	false;
+        source              	cellZone; 		
+        sourceName     		bedOfSpheres;
+        region 			bedOfSpheres;
+        operation         	volAverage;
+	
+        fields
+        (
+            T
+        );
+    }
+
+    averageSurfaceTemperatureSolid
+    {
+    
+        type                  	faceSource;
+        functionObjectLibs 	("libfieldFunctionObjects.so");
+        outputControl   	timeStep;
+        outputInterval   	20;
+        log                   	yes;
+        valueOutput           	false;
+        source              	patch; 			
+        sourceName         	bedOfSpheres_to_fluid; 	
+        region 			bedOfSpheres;
+        operation         	areaAverage;
+	
+        fields
+        (
+            T
+        );
+    }
+    
+    volumeIntegratedSolidTemperature
+    {
+    
+        type                  	cellSource;
+        functionObjectLibs 	("libfieldFunctionObjects.so");
+        outputControl   	timeStep;
+        outputInterval  	20;
+        log                   	yes;
+        valueOutput           	false;
+        source              	cellZone; 
+        sourceName     		bedOfSpheres; 
+        region 			bedOfSpheres;
+  	operation         	volIntegrate;
+
+        fields
+        (
+            T
+        );
+    }
+     
+// ************************************************************************* //
+
+    probesFluid
+    {
+        functionObjectLibs 	( "libsampling.so" );
+        type            	probes;
+        name            	probes;
+        outputControl   	timeStep;
+	outputInterval  	20;
+	region			fluid;
+	
+        fields
+        (
+            T
+        );
+	
+        probeLocations
+        (
+            ( 0.001 0.001  0.6 )    
+            ( 0.001 0.001 -0.6 )
+	    ( 0.001 0.001 -1.0 )  
+        );
+    }
+    
+// ************************************************************************* //
+    
+    probesSolid
+    {
+        functionObjectLibs 	( "libsampling.so" );
+        type            	probes;
+        name            	probes;
+        outputControl   	timeStep;
+	outputInterval  	20;
+	region			bedOfSpheres;
+	
+        fields
+        (
+            T
+        );
+	
+        probeLocations
+        (
+            ( 0.001 0.001  0.4 )    
+            ( 0.001 0.001  0 )
+	    ( 0.001 0.001 -0.4 )  
+        );
+    }
+
+// ************************************************************************* //
+
+    xTemperatureProfileInSolid
+    {
+	functionObjectLibs 	( "libsampling.so" );
+	type 			sets;
+	enabled			true;
+	interpolationScheme 	cell; 
+	setFormat 		raw;
+	region 			bedOfSpheres;
+	outputControl   	outputTime;
+
+	fields          
+	( 
+	    T
+	); 
+      
+	sets
+	(
+	    xLine
+	    {
+		type    		midPoint;
+		axis     		x;
+		start   		( -10 0.001 0.001 );
+		end 			(  10 0.001 0.001 );
+	    }
+	);
+    }
+
+    yTemperatureProfileInSolid
+    {
+	functionObjectLibs 	( "libsampling.so" );
+	type 			sets;
+	enabled			true;
+	interpolationScheme 	cell; 
+	setFormat 		raw;
+	region 			bedOfSpheres;
+	outputControl   	outputTime;
+
+	fields          
+	( 
+	    T
+	); 
+      
+	sets
+	(
+	    yLine
+	    {
+		type    		midPoint;
+		axis     		y;
+		start   		( 0.001 -10 0.001 );
+		end 			( 0.001  10 0.001 );
+	    }
+	);
+    }
+    
+    zTemperatureProfileInSolid
+    {
+	functionObjectLibs 	( "libsampling.so" );
+	type 			sets;
+	enabled			true;
+	interpolationScheme 	cell;
+	setFormat 		raw;
+	region 			bedOfSpheres;
+	outputControl   	outputTime;
+
+	fields          
+	( 
+	    T
+	); 
+      
+	sets
+	(
+	    zLine
+	    {
+		type    		midPoint;
+		axis     		z;
+		start   		( 0.001 0.001 -10 );
+		end 			( 0.001 0.001  10 );
+	    }
+	);
+    }
+
+// ************************************************************************* //
+
+    xTemperatureProfileInFluid
+    {
+	functionObjectLibs 	( "libsampling.so" );
+	type 			sets;
+	enabled			true;
+	interpolationScheme 	cell;
+	setFormat 		raw;
+	region 			fluid;
+	outputControl   	outputTime;
+
+	fields          
+	( 
+	    T
+	); 
+	
+	sets
+	(
+	    negativeXLine
+	    {
+		  type    midPoint;
+		  axis    x;
+		  start   ( -0.48 0.001 0.001 );
+		  end     ( -1    0.001 0.001 );
+	    }
+	    
+	    positiveXLine
+	    {
+		  type    midPoint;
+		  axis    x;
+		  start   ( 0.48 0.001 0.001 );
+		  end     ( 1    0.001 0.001 );
+	    }
+	);
+    }
+
+    yTemperatureProfileInFluid
+    {
+	functionObjectLibs 	( "libsampling.so" );
+	type 			sets;
+	enabled			true;
+	interpolationScheme 	cell;
+	setFormat 		raw;
+	region 			fluid;
+	outputControl   	outputTime;
+
+	fields          
+	( 
+	    T
+	); 
+	
+	sets
+	(
+	    negativeYLine
+	    {
+		  type    midPoint;
+		  axis    y;
+		  start   ( 0.001 -0.48  0.001 );
+		  end     ( 0.001 -1     0.001 );
+	    }
+	    
+	    positiveYLine
+	    {
+		  type    midPoint; // uniform;
+		  axis    y;
+		  start   ( 0.001 0.48 0.001 );
+		  end     ( 0.001 1    0.001 );
+	    }
+	);
+    }
+    
+    zTemperatureProfileInFluid
+    {
+	functionObjectLibs 	( "libsampling.so" );
+	type 			sets;
+	enabled			true;
+	interpolationScheme 	cell;
+	setFormat 		raw;
+	region 			fluid;
+	outputControl   	outputTime;
+
+	fields          
+	( 
+	    T
+	); 
+	
+	sets
+	(
+	    negativeZLine
+	    {
+		  type    midPoint;
+		  axis    z;
+		  start   ( 0.001 0.001 -0.48 );
+		  end     ( 0.001 0.001 -1 );
+	    }
+	    
+	    positiveZLine
+	    {
+		  type    midPoint; 
+		  axis    z;
+		  start   ( 0.001 0.001 0.48 );
+		  end     ( 0.001 0.001 1 );
+	    }
+	);
+    }
+
+// ************************************************************************* //
+
+    slicesFluid
+    {
+          type 			surfaces;
+          functionObjectLibs 	("libsampling.so");
+          interpolationScheme 	cell;
+	  outputControl   	outputTime;
+          surfaceFormat 	vtk;
+	  region 		fluid;
+
+          fields ( U p T );
+
+          surfaces
+          (
+              xyPlane
+              {
+                  type 			cuttingPlane;
+                  planeType 		pointAndNormal;
+                  pointAndNormalDict
+                  {
+                      basePoint 	(0 0 0);
+                      normalVector 	(0 0 1);
+                  }
+		  interpolate true;
+              }
+              
+              xzPlane
+              {
+                  type 			cuttingPlane;
+                  planeType 		pointAndNormal;
+                  pointAndNormalDict
+                  {
+                      basePoint 	(0 0 0);
+                      normalVector 	(0 1 0);
+                  }
+		  interpolate true;
+              }
+              
+              yzPlane
+              {
+                  type 			cuttingPlane;
+                  planeType 		pointAndNormal;
+                  pointAndNormalDict
+                  {
+                      basePoint 	(0 0 0);
+                      normalVector 	(1 0 0);
+                  }
+		  interpolate true;
+              }
+  	   );
+        }
+        
+    slicesSolid
+    {
+          type 			surfaces;
+          functionObjectLibs 	("libsampling.so");
+          interpolationScheme 	cell;
+	  outputControl   	outputTime;
+          surfaceFormat 	vtk;
+	  region 		bedOfSpheres;
+
+          fields ( T );
+
+          surfaces
+          (
+              xyPlane
+              {
+                  type 			cuttingPlane;
+                  planeType 		pointAndNormal;
+                  pointAndNormalDict
+                  {
+                      basePoint 	(0 0 0);
+                      normalVector 	(0 0 1);
+                  }
+		  interpolate true;
+              }
+              
+              xzPlane
+              {
+                  type 			cuttingPlane;
+                  planeType 		pointAndNormal;
+                  pointAndNormalDict
+                  {
+                      basePoint 	(0 0 0);
+                      normalVector 	(0 1 0);
+                  }
+		  interpolate true;
+              }
+              
+              yzPlane
+              {
+                  type 			cuttingPlane;
+                  planeType 		pointAndNormal;
+                  pointAndNormalDict
+                  {
+                      basePoint 	(0 0 0);
+                      normalVector 	(1 0 0);
+                  }
+		  interpolate true;
+              }
+  	  );
+    }
+    
+// ************************************************************************* //
+    
+    temperatureMinMaxFluid
+    {
+	type        fieldMinMax;
+	functionObjectLibs ("libfieldFunctionObjects.so");
+	write       yes;
+	log         yes;
+	location    yes;
+	mode        magnitude;
+	region	    fluid;
+	
+	fields
+	(
+	    T
+	);
+    }
+    
+    velocityMinMaxFluid
+    {
+	type        fieldMinMax;
+	functionObjectLibs ("libfieldFunctionObjects.so");
+	write       yes;
+	log         yes;
+	location    yes;
+	mode        magnitude;
+	region	    fluid;
+	
+	fields
+	(
+	    U
+	);
+    }
+ 
+// ************************************************************************* // 
+
+    temperatureMinMaxSolid
+    {
+	type        fieldMinMax;
+	functionObjectLibs ("libfieldFunctionObjects.so");
+	write       yes;
+	log         yes;
+	location    yes;
+	mode        magnitude;
+	region	    bedOfSpheres;
+	
+	fields
+	(
+	    T
+	);
+    }
+}
+
+// ************************************************************************* // 

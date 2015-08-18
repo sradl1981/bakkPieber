@@ -1,0 +1,69 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2.3.0                                 |
+|   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+
+    averageSolidTemperature
+    {
+    
+        type                  	cellSource;
+        functionObjectLibs 	("libfieldFunctionObjects.so");
+        outputControl   	timeStep;
+        outputInterval   	2;
+        log                   	yes;
+        valueOutput          	false;
+        source              	cellZone; 		
+        sourceName     		solidSphere;
+        region 			solidSphere;
+        operation         	volAverage;
+	
+        fields
+        (
+            T
+        );
+    }
+    
+    volumeIntegratedSolidTemperature
+    {
+    
+        type                  	cellSource;
+        functionObjectLibs 	("libfieldFunctionObjects.so");
+        outputControl   	timeStep;
+        outputInterval  	2;
+        log                   	yes;
+        valueOutput           	false;
+        source              	cellZone; 
+        sourceName     		solidSphere; 
+        region 			solidSphere;
+  	operation         	volIntegrate;
+
+        fields
+        (
+            T
+        );
+    }
+    
+    averageSurfaceTemperatureSolid
+    {
+    
+        type                  	faceSource;
+        functionObjectLibs 	("libfieldFunctionObjects.so");
+        outputControl   	timeStep;
+        outputInterval   	2;
+        log                   	yes;
+        valueOutput           	false;
+        source              	patch; 			
+        sourceName         	solidSphere_to_fluid; 	
+        region 			solidSphere;
+        operation         	areaAverage;
+	
+        fields
+        (
+            T
+        );
+    }
+
+// ************************************************************************* //

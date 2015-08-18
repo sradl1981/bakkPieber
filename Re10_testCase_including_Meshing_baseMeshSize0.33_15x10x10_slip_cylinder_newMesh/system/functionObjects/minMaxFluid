@@ -1,0 +1,41 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2.3.0                                 |
+|   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+ 
+    temperatureMinMaxFluid
+    {
+	type        fieldMinMax;
+	functionObjectLibs ("libfieldFunctionObjects.so");
+	write       yes;
+	log         yes;
+	location    yes;
+	mode        magnitude;
+	region	    fluid;
+	
+	fields
+	(
+	    T
+	);
+    }
+    
+    velocityMinMaxFluid
+    {
+	type        fieldMinMax;
+	functionObjectLibs ("libfieldFunctionObjects.so");
+	write       yes;
+	log         yes;
+	location    yes;
+	mode        magnitude;
+	region	    fluid;
+	
+	fields
+	(
+	    U
+	);
+    }
+
+// ************************************************************************* //

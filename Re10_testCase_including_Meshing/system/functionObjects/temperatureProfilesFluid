@@ -1,0 +1,114 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2.3.0                                 |
+|   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+ 
+//     xTemperatureProfileInFluid
+//     {
+// 	functionObjectLibs 	( "libsampling.so" );
+// 	type 			sets;
+// 	enabled			true;
+// 	interpolationScheme 	cell;
+// 	setFormat 		raw;
+// 	region 			fluid;
+// 	outputControl   	outputTime;
+// 
+// 	fields          
+// 	( 
+// 	    T
+// 	); 
+// 	
+// 	sets
+// 	(
+// 	    negativeXLine
+// 	    {
+// 		  type    midPoint;
+// 		  axis    x;
+// 		  start   ( -0.48 0 0 );
+// 		  end     ( -1    0 0 );
+// 	    }
+// 	    
+// 	    positiveXLine
+// 	    {
+// 		  type    midPoint;
+// 		  axis    x;
+// 		  start   ( 0.48 0 0 );
+// 		  end     ( 1    0 0 );
+// 	    }
+// 	);
+//     }
+// 
+//     yTemperatureProfileInFluid
+//     {
+// 	functionObjectLibs 	( "libsampling.so" );
+// 	type 			sets;
+// 	enabled			true;
+// 	interpolationScheme 	cell;
+// 	setFormat 		raw;
+// 	region 			fluid;
+// 	outputControl   	outputTime;
+// 
+// 	fields          
+// 	( 
+// 	    T
+// 	); 
+// 	
+// 	sets
+// 	(
+// 	    negativeYLine
+// 	    {
+// 		  type    midPoint;
+// 		  axis    y;
+// 		  start   ( 0 -0.48  0 );
+// 		  end     ( 0 -1     0 );
+// 	    }
+// 	    
+// 	    positiveYLine
+// 	    {
+// 		  type    midPoint; // uniform;
+// 		  axis    y;
+// 		  start   ( 0 0.48 0 );
+// 		  end     ( 0 1    0 );
+// 	    }
+// 	);
+//     }
+    
+    zTemperatureProfileInFluid
+    {
+	functionObjectLibs 	( "libsampling.so" );
+	type 			sets;
+	enabled			true;
+	interpolationScheme 	cell;
+	setFormat 		raw;
+	region 			fluid;
+	outputControl   	outputTime;
+
+	fields          
+	( 
+	    T
+	); 
+	
+	sets
+	(
+	    negativeZLine
+	    {
+		  type    midPoint;
+		  axis    z;
+		  start   ( 0.001 0.001 -0.48 );
+		  end     ( 0.001 0.001 -1 );
+	    }
+	    
+	    positiveZLine
+	    {
+		  type    midPoint; 
+		  axis    z;
+		  start   ( 0.001 0.001 0.48 );
+		  end     ( 0.001 0.001 1 );
+	    }
+	);
+    }
+
+// ************************************************************************* //

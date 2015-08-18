@@ -35,7 +35,7 @@ purgeWrite      5;
 
 writeFormat     ascii;
 
-writePrecision  12
+writePrecision  12;
 
 writeCompression off;
 

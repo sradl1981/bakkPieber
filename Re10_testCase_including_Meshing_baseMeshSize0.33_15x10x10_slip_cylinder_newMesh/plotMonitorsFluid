@@ -1,0 +1,14 @@
+
+        set title "Residual vs. Iteration"
+        set xlabel "Iteration"
+        set ylabel "Monitor values"
+        plot "postProcessing/fluid/outletFlowWeightedFluidTemperature/0/faceSource.dat" using 1:3 title "outletFlowWeightedFluidTemperature",\
+	    "postProcessing/fluid/averageFluidTemperature/0/cellSource.dat" using 1:3 title "averageFluidTemperature",\
+	    "postProcessing/probesFluid/fluid/0/T" using 1:2 title "probe location 1",\
+	    "postProcessing/probesFluid/fluid/0/T" using 1:3 title "probe location 2",\
+	    "postProcessing/probesFluid/fluid/0/T" using 1:4 title "probe location 3",\
+	    "postProcessing/probesFluid/fluid/0/T" using 1:5 title "probe location 4"
+        pause 2
+        reread
+
+# ----------------------------------------------------------------- end-of-file

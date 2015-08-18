@@ -1,0 +1,90 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2.3.0                                 |
+|   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+ 
+//     xTemperatureProfileInSolid
+//     {
+// 	functionObjectLibs 	( "libsampling.so" );
+// 	type 			sets;
+// 	enabled			true;
+// 	interpolationScheme 	cell; 
+// 	setFormat 		raw;
+// 	region 			solidSphere;
+// 	outputControl   	outputTime;
+// 
+// 	fields          
+// 	( 
+// 	    T
+// 	); 
+//       
+// 	sets
+// 	(
+// 	    xLine
+// 	    {
+// 		type    		midPoint;
+// 		axis     		x;
+// 		start   		( -10 0.001 0.001 );
+// 		end 			(  10 0.001 0.001 );
+// 	    }
+// 	);
+//     }
+// 
+//     yTemperatureProfileInSolid
+//     {
+// 	functionObjectLibs 	( "libsampling.so" );
+// 	type 			sets;
+// 	enabled			true;
+// 	interpolationScheme 	cell; 
+// 	setFormat 		raw;
+// 	region 			solidSphere;
+// 	outputControl   	outputTime;
+// 
+// 	fields          
+// 	( 
+// 	    T
+// 	); 
+//       
+// 	sets
+// 	(
+// 	    yLine
+// 	    {
+// 		type    		midPoint;
+// 		axis     		y;
+// 		start   		( 0.001 -10 0.001 );
+// 		end 			( 0.001  10 0.001 );
+// 	    }
+// 	);
+//     }
+    
+    zTemperatureProfileInSolid
+    {
+	functionObjectLibs 	( "libsampling.so" );
+	type 			sets;
+	enabled			true;
+	interpolationScheme 	cell;
+	setFormat 		raw;
+	region 			solidSphere;
+	outputControl   	outputTime;
+
+	fields          
+	( 
+	    T
+	); 
+      
+	sets
+	(
+	    zLine
+	    {
+		type    		midPoint;
+		axis     		z;
+		start   		( 0.001 0.001 -10 );
+		end 			( 0.001 0.001 10 );
+	    }
+	);
+    }
+
+// ************************************************************************* //

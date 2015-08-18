@@ -1,0 +1,79 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2.3.0                                 |
+|   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    location    "system";
+    object      controlDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+application     chtMultiRegionFoam; 
+
+startFrom	startTime;
+
+startTime	0;
+
+stopAt          endTime;           // nextWrite; // stops simulation on completion of next scheduled write time, specified by writeControl	
+
+endTime         150;
+
+deltaT          1e-8;
+
+writeControl    adjustableRunTime; // writes data every writeInterval seconds of simulated time, adjusting the time steps to coincide with 
+				   // the writeInterval if necessary — used in cases with automatic time step adjustment 
+writeInterval   5;
+
+purgeWrite      30;
+
+writeFormat     ascii;
+
+writePrecision  12;
+
+writeCompression off;
+
+timeFormat      general;
+
+timePrecision   12;
+
+runTimeModifiable true;
+
+maxCo           0.5; 
+
+adjustTimeStep  yes;
+
+maxDi           10.0;
+
+// ************************************************************************* //
+
+// functions
+// {
+//     #include "functionObjects/monitorsFluid"
+//   
+//     #include "functionObjects/monitorsSolid"
+//   
+//     #include "functionObjects/probesFluid"
+//   
+//     #include "functionObjects/probesSolid"
+//   
+// //     #include "functionObjects/temperatureProfilesFluid"
+// //   
+// //     #include "functionObjects/temperatureProfilesSolid"
+//   
+//     #include "functionObjects/slicesFluid"
+//   
+// //     #include "functionObjects/slicesSolid"
+//   
+//     #include "functionObjects/minMaxFluid"
+//   
+//     #include "functionObjects/minMaxSolid"
+// }
+
+// ************************************************************************* // 

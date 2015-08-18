@@ -1,0 +1,21 @@
+#!/bin/sh
+cd ${0%/*} || exit 1    # run from this directory
+
+for time in $(foamInfoExec -times)
+do
+    [ "$time" = "0" -o "$time" = constant ] || 
+	{
+	echo "Deleting directory $time"
+        rm -rf $time > /dev/null 2>&1
+        }
+done
+
+rm -rf processor* > /dev/null 2>&1
+
+rm -rf log.* > /dev/null 2>&1
+
+rm -rf postProcessing > /dev/null 2>&1
+
+rm -rf logs > /dev/null 2>&1
+
+# ----------------------------------------------------------------- end-of-file

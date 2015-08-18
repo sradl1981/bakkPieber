@@ -1,0 +1,114 @@
+#!/bin/sh
+cd ${0%/*} || exit 1    # run from this directory
+
+currDir=$PWD
+
+# Source tutorial run functions
+. $WM_PROJECT_DIR/bin/tools/RunFunctions
+
+rm -rf constant/polyMesh/sets
+
+mkdir meshLogFiles
+
+runApplication blockMesh
+
+mv ./log.blockMesh ./meshLogFiles/log.blockMesh
+
+runApplication snappyHexMesh -overwrite
+
+mv ./log.snappyHexMesh ./meshLogFiles/log.snappyHexMesh
+
+runApplication topoSet
+
+mv ./log.topoSet ./meshLogFiles/log.topoSet
+
+runApplication splitMeshRegions -cellZones -overwrite
+
+mv ./log.splitMeshRegions ./meshLogFiles/log.splitMeshRegions
+
+# Layer adding in solid region (solidSphere)
+
+cd constant/polyMesh
+
+ls *|grep -v blockMeshDict|xargs rm -rf
+
+cd $currDir
+
+mkdir meshLayering
+
+mkdir meshLayering/system
+
+mkdir meshLayering/constant
+
+mkdir meshLayering/constant/polyMesh
+
+cp system/snappyHexMeshDict.solidSphereLayering meshLayering/system/snappyHexMeshDict
+
+cp -r constant/solidSphere/polyMesh meshLayering/constant
+
+cp system/controlDict meshLayering/system/controlDict
+
+cp system/meshQualityDict meshLayering/system/meshQualityDict
+
+cp system/fvSchemes meshLayering/system/fvSchemes
+
+cp system/fvSolution meshLayering/system/fvSolution
+
+cd meshLayering
+
+runApplication snappyHexMesh -overwrite
+
+rm -r ../constant/solidSphere/polyMesh
+
+mv constant/polyMesh ../constant/solidSphere/
+
+mv log.snappyHexMesh ../meshLogFiles/log.snappyHexMesh.solidSphereLayering
+
+cd $currDir
+
+rm -r meshLayering
+
+
+# Layer adding in fluid region (fluid)
+
+# cd constant/polyMesh
+# 
+# ls *|grep -v blockMeshDict|xargs rm -rf
+# 
+# cd $currDir
+
+mkdir meshLayering
+
+mkdir meshLayering/system
+
+mkdir meshLayering/constant
+
+mkdir meshLayering/constant/polyMesh
+
+cp system/snappyHexMeshDict.fluidLayering meshLayering/system/snappyHexMeshDict
+
+cp -r constant/fluid/polyMesh meshLayering/constant
+
+cp system/controlDict meshLayering/system/controlDict
+
+cp system/meshQualityDict meshLayering/system/meshQualityDict
+
+cp system/fvSchemes meshLayering/system/fvSchemes
+
+cp system/fvSolution meshLayering/system/fvSolution
+
+cd meshLayering
+
+runApplication snappyHexMesh -overwrite
+
+rm -r ../constant/fluid/polyMesh
+
+mv constant/polyMesh ../constant/fluid/
+
+mv log.snappyHexMesh ../meshLogFiles/log.snappyHexMesh.fluidLayering
+
+cd $currDir
+
+rm -r meshLayering
+
+# ----------------------------------------------------------------- end-of-file

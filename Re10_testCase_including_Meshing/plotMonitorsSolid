@@ -1,0 +1,13 @@
+
+        set title "Monitor values vs. Time"
+        set xlabel "Time"
+        set ylabel "Monitor values"
+        plot "postProcessing/solidSphere/averageSurfaceTemperatureSolid/0/faceSource.dat" using 1:3 title "averageSurfaceTemperature",\
+	    "postProcessing/solidSphere/averageSolidTemperature/0/cellSource.dat" using 1:3 title "averageSolidTemperature",\
+	    "postProcessing/probesSolid/solidSphere/0/T" using 1:2 title "probe location 1",\
+	    "postProcessing/probesSolid/solidSphere/0/T" using 1:3 title "probe location 2",\
+	    "postProcessing/probesSolid/solidSphere/0/T" using 1:4 title "probe location 3"
+        pause 2
+        reread
+
+# ----------------------------------------------------------------- end-of-file
